@@ -15,12 +15,15 @@ class LargestPalindromeProduct {
     /** minNum is 1 for 1-Digit, 10 for 2-Digit, 100 for 3-Digit */
     private final int minNum;
 
-    /** last is the last palindrome already used, initialize to lowest palindrome > @max in constructor */
+    /**
+     * last is the last palindrome already used, initialize to the lowest
+     * palindrome > maxNum*maxNum in constructor
+     */
     private List<Integer> last;
     /** results */
     private int num1 = 0;
     private int num2 = 0;
-    /** digit palidrome is required */
+    /** how many digits palidrome is required */
     private int digit;
 
     public LargestPalindromeProduct(int digit) {
@@ -81,14 +84,15 @@ class LargestPalindromeProduct {
         Incase of underflowing, low also neighbr indexes
     */
     final private void decrementMirrorIndexesOfLast(int index, int size) {
+        // indexIsCenter - odd number of digits in the last palindrome
         boolean indexIsCenter = (((size % 2) == 1) && ((size/2) == index));
         int digitValue = last.get(index);
 
-        int newDigitValue = (digitValue+10-1) % 10;
-        // decrement index
+        int newDigitValue = (digitValue+9) % 10;
+        // decrement digit with index
         last.set(index, newDigitValue);
         if (!indexIsCenter) {
-            // decrement also mirror index
+            // decrement also digit with mirror index
             last.set(
                 LargestPalindromeProduct.mirror.applyAsInt(index, size),
                 newDigitValue
@@ -98,8 +102,8 @@ class LargestPalindromeProduct {
         // decrement newghbrs
         if ((digitValue == 0) && (index < (size-1))) {
             decrementMirrorIndexesOfLast(index+1, size);
-        } else if ((digitValue == 1) && (index == (size-1))) { //nechci okrajove nuly
-            // drop last element from list and set all element values to 9
+        } else if ((digitValue == 1) && (index == (size-1))) { //no zeros on borders
+            // drop the last element from list and set all element values to 9
             last.remove(last.size()-1);
             for (int i = 0; i < last.size(); i++) {
                 last.set(i, 9);
@@ -113,6 +117,7 @@ class LargestPalindromeProduct {
         // array for 99999 = 9*10^0+9*10^1+9*10^2+9*10^3+9*10^4 is {9, 9, 9, 9, 9}
 
         // find centerIndex - to modify palindrome
+        // (e. g. 998899 -> 997799, 20002 -> 19991, 10001 -> 9999)
         int centerIndex = last.size() / 2;
         decrementMirrorIndexesOfLast(centerIndex, last.size());
 
